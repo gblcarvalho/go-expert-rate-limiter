@@ -16,7 +16,10 @@ func NewRateLimiter(store RateLimiterStoreInterface, TimeWindow time.Duration) (
 	}, nil
 }
 
-func (rl *RateLimiter) Allow(key string, maxRequests int) bool {
-	count := rl.store.IncrementOrReset(key, rl.TimeWindow)
+func (rl *RateLimiter) Allow(key string, maxRequests int64) bool {
+	count, err := rl.store.IncrementOrReset(key, rl.TimeWindow)
+	if err != nil {
+		return false
+	}
 	return count <= maxRequests
 }

@@ -14,8 +14,8 @@ type RateLimiterMiddleware struct {
 }
 
 type RateLimiterMiddlewareOpts struct {
-	IPMaxRequests    int
-	TokenMaxRequests int
+	IPMaxRequests    int64
+	TokenMaxRequests int64
 	TimeWindow       time.Duration
 }
 
@@ -52,9 +52,9 @@ func (m *RateLimiterMiddleware) Handler(next http.Handler) http.Handler {
 	})
 }
 
-func (m *RateLimiterMiddleware) getKeyAndMaxRequests(r *http.Request) (string, int) {
+func (m *RateLimiterMiddleware) getKeyAndMaxRequests(r *http.Request) (string, int64) {
 	var key string
-	var maxRequests int
+	var maxRequests int64
 
 	if m.opts.TokenMaxRequests > 0 {
 		key = getAPIKEYToken(r)

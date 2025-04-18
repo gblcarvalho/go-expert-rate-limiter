@@ -6,7 +6,7 @@ import (
 )
 
 type MemoryStoreRate struct {
-	count  int
+	count  int64
 	initAt time.Time
 }
 type MemoryStore struct {
@@ -20,7 +20,7 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
-func (s *MemoryStore) IncrementOrReset(key string, duration time.Duration) int {
+func (s *MemoryStore) IncrementOrReset(key string, duration time.Duration) (int64, error) {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
@@ -36,5 +36,5 @@ func (s *MemoryStore) IncrementOrReset(key string, duration time.Duration) int {
 
 	rate.count++
 	s.rates[key] = rate
-	return rate.count
+	return rate.count, nil
 }
