@@ -1,27 +1,34 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"time"
 
+	"github.com/gblcarvalho/go-expert-rate-limiter/pkg/configs"
 	"github.com/gblcarvalho/go-expert-rate-limiter/pkg/ratelimiter"
 	"github.com/go-chi/chi/v5"
-	// "github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
-	store := ratelimiter.NewMemoryStore()
-	// rdb := redis.NewClient(&redis.Options{
-	// 	Addr:     "localhost:6379",
-	// 	Username: "",
-	// 	Password: "", // no password set
-	// 	DB:       0,  // use default DB
-	// })
-	// store := ratelimiter.NewRedisStore(rdb)
+	config, err := configs.LoadConfig("../.", ".env")
+	if err != nil {
+		panic(err)
+	}
+	// store := ratelimiter.NewMemoryStore()
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     config.RedisAddr,
+	})
+	_, err = rdb.Ping(context.Background()).Result()
+	if err != nil {
+		panic(err)
+	}
+	store := ratelimiter.NewRedisStore(rdb)
 	opts := ratelimiter.RateLimiterMiddlewareOpts{
-		IPMaxRequests:    10,
-		TokenMaxRequests: 100,
-		TimeWindow:       time.Millisecond * 1000,
+		IPMaxRequests:    config.IPMaxRequests,
+		TokenMaxRequests: config.TokenMaxRequests,
+		TimeWindow:       time.Duration(config.TimeWindow * int64(time.Millisecond)),
 	}
 	rateLimiterMiddleware, err := ratelimiter.NewRateLimiterMiddleware(store, opts)
 	if err != nil {

@@ -1,6 +1,7 @@
 package ratelimiter
 
 import (
+	"log"
 	"time"
 )
 
@@ -19,6 +20,7 @@ func NewRateLimiter(store RateLimiterStoreInterface, TimeWindow time.Duration) (
 func (rl *RateLimiter) Allow(key string, maxRequests int64) bool {
 	count, err := rl.store.IncrementOrReset(key, rl.TimeWindow)
 	if err != nil {
+		log.Println(err)
 		return false
 	}
 	return count <= maxRequests
