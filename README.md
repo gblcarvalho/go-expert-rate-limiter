@@ -1,28 +1,5 @@
 # Go Expert Rate Limiter
 
-Este projeto implementa o desafio do Rate Limiter da pós Go Expert.
-
-O Rate Limiter funciona como um middleware e limita o número de requisições que podem serem feitas em uma determinada janela de tempo. A verificação pode ser feita por IP ou token API_KEY.
-O Rate limiter recebe as informações de limite máximo de requests por IP, limite máximo de requests por token e a janela de tempo da verificação em milisegundos.
-
-No servidor de exemplo contido desse projeto, as configurações do Rate Limiter são lidas do arquivo .env através das seguintes variáveis de ambiente:
-
-RATE_LIMITE_IP_MAX_REQUESTS
-RATE_LIMITE_TOKEN_MAX_REQUESTS
-RATE_LIMITE_TIME_WINDOW
-
-No projeto também foi desenvolvido dois Stores para salvar as informações das requisições, uma simples em Go que guarda as informações em memória e outra para utilizar o Redis
-
-Para executar o projeto é necessário criar o arquivo .env na raiz do projeto, esse arquivo pode ter o conteúdo duplicado de .env.dev
-
-A execução do projeto via docker pode ser feita através do comando:
-
-make start
-
-esse comando irá subir uma instancia do redis e uma do app, o app roda um servidor de exemplo da porta 8080 e rota /hello
-
-# Go Expert Rate Limiter
-
 Este projeto implementa o desafio de Rate Limiting da pós-graduação **Go Expert**.
 
 ---
@@ -85,18 +62,29 @@ Após iniciar, o servidor estará disponível em:
 
 GET http://localhost:8080/hello
 
-Você pode testar o Rate Limiter com um loop no terminal, por exemplo:
+Você pode testar o comportamento do Rate Limiter manualmente utilizando curl:
 
 ```bash
 for i in {1..20}; do curl -i http://localhost:8080/hello; done
 ```
 
-Se o limite de requisições for excedido, o servidor irá responder com:
+Se o número de requisições ultrapassar o limite configurado, o servidor responderá com:
 
 HTTP/1.1 429 Too Many Requests
 
-Você também pode executar o seguinte comando para executar testes automáticos onde será enviado requisições com o header API_KEY e requisições sem o header
+
+## 🧪 Testes automatizados com e sem API_KEY
+
+Para facilitar, o projeto também fornece um comando para rodar testes automáticos que disparam múltiplas requisições:
 
 ```bash
 make test
 ```
+
+Esse comando executa dois loops:
+
+- Requisições sem header API_KEY (baseadas apenas no IP do cliente)
+
+- Requisições com o header API_KEY
+
+Durante a execução, o script exibe o número da requisição, o loop correspondente, e as respostas completas (headers + corpo), permitindo visualizar facilmente quando o limite é atingido.
