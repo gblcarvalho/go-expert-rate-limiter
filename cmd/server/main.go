@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gblcarvalho/go-expert-rate-limiter/pkg/configs"
+	"github.com/gblcarvalho/go-expert-rate-limiter/configs"
 	"github.com/gblcarvalho/go-expert-rate-limiter/pkg/ratelimiter"
 	"github.com/go-chi/chi/v5"
 	"github.com/redis/go-redis/v9"
@@ -18,7 +18,7 @@ func main() {
 	}
 	// store := ratelimiter.NewMemoryStore()
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     config.RedisAddr,
+		Addr: config.RedisAddr,
 	})
 	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
