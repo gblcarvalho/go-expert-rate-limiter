@@ -3,3 +3,6 @@ start:
 
 stop:
 	docker compose --env-file ./.env down
+
+test:
+	./test.sh
